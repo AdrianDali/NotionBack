@@ -16,9 +16,6 @@ class GetDjangoUserSerializer(serializers.Serializer):
 
 class CreateDjangoGroupSerializer(serializers.Serializer):
     name = serializers.CharField()
-    group_key = serializers.CharField()
 
 class GetDjangoGroupSerializer(serializers.Serializer):
     group = serializers.CharField(max_length= 50 )
-    group_key = serializers.CharField()
-

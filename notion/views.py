@@ -4,14 +4,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import CreateDjangoUserSerializer, GetDjangoUserSerializer, CreateDjangoGroupSerializer, GetDjangoGroupSerializer
 from rest_framework.permissions import AllowAny
-
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import User, Group
 from .serializers import CreateDjangoUserSerializer
+from NotionHackton.apiCreatePage import create_notion_page
+from NotionHackton.apiUpdatePage import update_notion_page
+from NotionHackton.apiGetPages import search_notion_pages
 
 class CreateDjangoUser(APIView):
     permission_classes = (AllowAny,)
@@ -161,3 +162,19 @@ class GetGroup(APIView):
         groups = GroupDjangoModel.objects.all()
         serializer = GetDjangoGroupSerializer(groups, many=True)
         return Response(serializer.data, status=200)
+
+class UpdateNotionPageView(APIView):
+    permission_classes = (AllowAny,)
+    def post(self, request, format=None):
+        new_title = request.data.get("new_title")
+        new_groups = request.data.get("new_groups")
+
+        if not new_title or not new_groups:
+            return Response({"error": "new_title and new_groups are required"}, status=status.HTTP_400_BAD_REQUEST)
+        print("new_title", new_title)
+        result = update_notion_page(new_title, new_groups)
+
+        if result:
+            return Response(result, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Failed to update the Notion page"}, status=status.HTTP_400_BAD_REQUEST)
